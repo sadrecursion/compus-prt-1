@@ -1,3 +1,4 @@
+//usr/bin/env gcc "$0" -o /tmp/main; /tmp/main; exit
 #include <stdio.h>
 #include <string.h>
 
@@ -52,27 +53,30 @@ bool fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n
 }
 
 void puzzle_print(const char matrix[], int rows, int columns) {
-    int i = 0;
-    int j = 0;
-    int k = 0;
+    int row = 0;
+    int column = 1;
+    int matrix_index = 0;
+    int buffer_index = 0;
 
-    while (i < rows) {
-        k = i * columns;
-        j = 0;
+    int buffer_size = (rows * columns * 2) + 1;
+    char buffer[buffer_size];
 
-        while (j < columns) {
-            printf("%c", matrix[k + j]);
-
-            if (j != columns - 1) {
-                printf(";");
-            }
-
-            j++;
+    while (row < rows) {
+        column = 1;
+        buffer[buffer_index++] = matrix[matrix_index];
+        while (column < columns) {
+            buffer[buffer_index++] = ';';
+            buffer[buffer_index++] = matrix[matrix_index + column];
+            column++;
         }
 
-        printf("\n");
-        i++;
+        buffer[buffer_index++] = '\n';
+        matrix_index += columns;
+        row++;
     }
+
+    buffer[buffer_index] = 0;
+    printf("%s", buffer);
 }
 
 int main() {
