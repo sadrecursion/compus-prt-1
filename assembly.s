@@ -25,85 +25,129 @@ init_matrix_loop:
     j init_matrix_loop
 
 init_matrix_end:
-    ret
+    jr ra
 
 puzzle_print:
     # a0 = dirección de la matriz
     # a1 = filas
     # a2 = columnas
 
-    # t0 = capacidad del buffer
-    # t1 = primera dirección del buffer
-    # t2 = contador de fila
-    # t3 = contador de columna
-    # t4 = temporal para copiar un byte
-    # t5 = separador de columna
-    # t6 = salto de línea
+    # t0 = número total de columnas
+    # t1 = longitud del string
+    # t2 = dirección del string
+    # t3 = temporal genérico
+    # t4 = separador de columna
+    # t5 = salto de línea
 
-    # Calculamos los caracteres a imprimir utilizando las dimensiones de la
-    # matriz. Esto se hace con la fórmula (2 * columnas * filas) + 1.
-    mul t0, a1, a2
-    slli t0, t0, 1 # multiplicamos por 2
-    addi t0, t0, 1 # un byte extra para el 0
+    mv t0, a2
 
-    sub sp, sp, t0 # reservamos el buffer
-    mv t1, sp      # guardamos la primera dirección del buffer
+    # Calculamos la longitud
+    mul t1, a1, a2
+    slli t1, t1, 1
+    addi t1, t1, 1
 
-    li t2, 0       # contador de fila
-    li t5, 59      # separador de columna
-    li t6, 10      # salto de línea
+    # Reservamos espacio en la pila
+    sub sp, sp, t1
+    mv t2, sp
+
+    li t4, 59
+    li t5, 10
 
 puzzle_print_row:
-    bge t2, a1, puzzle_print_end # t2 >= a1
+    beqz a1, puzzle_print_end
 
-    li t3, 1       # columna actual
+    # Insertamos el primer elemento de la fila
+    lb t3, 0(a0)
+    sb t3, 0(t2)
 
-    lb t4, 0(a0)   # cargamos el primer byte de la fila
-    sb t4, 0(t1)   # cargamos el byte en el buffer
-
-    addi a0, a0, 1 # dirección de la matriz + 1
-    addi t1, t1, 1 # dirección del buffer + 1
+    addi a0, a0, 1
+    addi t2, t2, 1
 
 puzzle_print_column:
-    bge t3, a2, puzzle_print_row_end # t3 >= a2
+    li t3, 1
+    beq a2, t3, puzzle_print_row_end
 
-    sb t5, 0(t1)   # cargamos el separador en el buffer
-    addi t1, t1, 1 # dirección del buffer + 1
+    # Insertamos el separador de columna
+    sb t4, 0(t2)
+    addi t2, t2, 1
 
-    lb t4, 0(a0)   # cargamos el siguiente byte de la matriz
-    sb t4, 0(t1)   # cargamos el byte en el buffer
+    # Insertamos el siguiente elemento de la fila
+    lb t3, 0(a0)
+    sb t3, 0(t2)
+    addi a0, a0, 1
+    addi t2, t2, 1
 
-    addi a0, a0, 1 # dirección de la matriz + 1
-    addi t1, t1, 1 # dirección del buffer + 1
-    addi t3, t3, 1 # contador de columna + 1
+    addi a2, a2, -1
 
     j puzzle_print_column
 
 puzzle_print_row_end:
-    sb t6, 0(t1)   # cargamos el salto de línea en el buffer
+    # Restauramos el número total de columnas
+    mv a2, t0
 
-    addi t1, t1, 1 # dirección del buffer + 1
-    addi t2, t2, 1 # contador de fila + 1
+    # Insertamos el salto de línea
+    sb t5, 0(t2)
+    addi t2, t2, 1
+
+    addi a1, a1, -1
 
     j puzzle_print_row
 
 puzzle_print_end:
-    sb zero, 0(t1) # cargamos el byte 0 en el buffer
+    # Insertamos el 0
+    sb zero, 0(t2)
 
-    li a7, 4       # print string
-    mv a0, sp      # la dirección del buffer sigue estando en sp
+    # Imprimimos el string
+    li a7, 4
+    mv a0, sp
     ecall
 
-    # Restauramos la pila teniendo en cuenta que la llamada anterior no debería
-    # de modificar t0.
-    add sp, sp, t0
-    ret
+    # Restauramos la pila
+    add sp, sp, t1
+    jr ra
+
+fill_puzzle:
+    # a0 = dirección de la matriz
+    # a1 = filas
+    # a2 = columnas
+    # a3 = dirección del vector
+    # a4 = número de elementos del vector
+
+    li t0, 182
+
+fill_puzzle_loop:
+    beqz a4, fill_puzzle_true
+
+    lw t1, 0(a3)
+    lw t2, 4(a3)
+    addi a3, a3, 8
+
+    bge t1, a1, fill_puzzle_false
+    bge t2, a2, fill_puzzle_false
+
+    mul t3, t0, a2
+    add t3, t3, t2
+    add t3, t3, a0
+
+    sb t0, 0(t3)
+
+    j fill_puzzle_loop
+
+fill_puzzle_false:
+    li a0, 0
+    jr ra
+
+fill_puzzle_true:
+    li a0, 1
+    jr ra
 
 main:
+    # inicializa la matriz 1
     la a0, m1_data
     la a1, 25
     jal ra, init_matrix
 
+    # imprime la matriz 1
     la a0, m1_data
     li a1, 5
     li a2, 5
