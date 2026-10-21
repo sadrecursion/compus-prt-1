@@ -54,30 +54,48 @@ bool fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n
 
 // HECHA
 void puzzle_print(const char matrix[], int rows, int columns) {
-    int row = 0;
-    int column = 1;
-    int matrix_index = 0;
-    int buffer_index = 0;
+    // Guardamos el número total de columnas
+    const int total_columns = columns;
 
-    int buffer_size = (rows * columns * 2) + 1;
-    char buffer[buffer_size];
+    // Calculamos la longitud necesaria para el texto que queremos imprimir y
+    // reservamos ese espacio en la pila
+    int capacity = (rows * columns * 2) + 1;
+    char string[capacity];
+    char* buffer = string;
 
-    while (row < rows) {
-        column = 1;
-        buffer[buffer_index++] = matrix[matrix_index];
-        while (column < columns) {
-            buffer[buffer_index++] = ';';
-            buffer[buffer_index++] = matrix[matrix_index + column];
-            column++;
+    // Recorremos las filass
+    while (rows > 0) {
+        // Siempre insertamos directamente el primer elemento de cada fila
+        *buffer = *matrix;
+        buffer++;
+        matrix++;
+
+        // Recorremos las columnas
+        while (columns > 1) {
+            // Insertamos el separador de columna
+            *buffer = ';';
+            buffer++;
+
+            // Insertamos el siguiente elemento de la fila
+            *buffer = *matrix;
+            buffer++;
+            matrix++;
+
+            columns--;
         }
 
-        buffer[buffer_index++] = '\n';
-        matrix_index += columns;
-        row++;
+        // Restauramos el número de columnas
+        columns = total_columns;
+
+        // Insertamos el salto de línea la final de la fila
+        *buffer = '\n';
+        buffer++;
+
+        rows--;
     }
 
-    buffer[buffer_index] = 0;
-    printf("%s", buffer);
+    *buffer = 0;
+    printf("%s", string);
 }
 
 int main() {
