@@ -52,6 +52,7 @@ bool fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n
     return true;
 }
 
+// HECHA
 void puzzle_print(const char matrix[], int rows, int columns) {
     int row = 0;
     int column = 1;
