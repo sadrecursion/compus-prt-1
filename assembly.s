@@ -113,7 +113,7 @@ fill_puzzle:
     # a3 = dirección del vector
     # a4 = número de elementos del vector
 
-    li t0, 182
+    li t0, 35
 
 fill_puzzle_loop:
     beqz a4, fill_puzzle_true
@@ -125,12 +125,13 @@ fill_puzzle_loop:
     bge t1, a1, fill_puzzle_false
     bge t2, a2, fill_puzzle_false
 
-    mul t3, t0, a2
+    mul t3, t1, a2
     add t3, t3, t2
     add t3, t3, a0
 
     sb t0, 0(t3)
 
+    addi a4, a4, -2
     j fill_puzzle_loop
 
 fill_puzzle_false:
@@ -142,12 +143,26 @@ fill_puzzle_true:
     jr ra
 
 main:
-    # inicializa la matriz 1
+    # Inicializa la matriz 1
     la a0, m1_data
     la a1, 25
     jal ra, init_matrix
 
-    # imprime la matriz 1
+    # Imprime la matriz 1
+    la a0, m1_data
+    li a1, 5
+    li a2, 5
+    jal ra, puzzle_print
+
+    # Rellenamos la matriz 1
+    la a0, m1_data
+    li a1, 5
+    li a2, 5
+    la a3, m1_fill
+    li a4, 4
+    jal ra, fill_puzzle
+
+    # Imprime la matriz 1
     la a0, m1_data
     li a1, 5
     li a2, 5
