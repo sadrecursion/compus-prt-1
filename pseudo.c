@@ -37,23 +37,68 @@ bool insert_puzzle(char matrix[], int rows, int columns, const char string[], in
     return true;
 }
 
+// HECHA
 // Esta función asume que n es un número par positivo. En caso de ser impar se
 // puede producir un UB en la última iteración. En caso de no poder asumir que
 // n es un número válido sería necesario añadir una comprobación.
-bool fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n) {
-    int i = 0;
-    while (i < n) {
-        int x = vector[i++];
-        int y = vector[i++];
-        if (x >= rows || y >= columns) { return false; }
+int fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n) {
+    int x;
+    int y;
+
+    while (n > 0) {
+        // Guardamos las coordenadas
+        x = vector[0];
+        y = vector[1];
+        vector += 2;
+
+        // Si están fuera de la matriz devolvemos 0
+        if (x >= rows) { return 0; }
+        if (y >= columns) { return 0; }
+
+        // Rellenamos la matriz
         matrix[x * columns + y] = FILL_CHAR;
+
+        // Decrementamos el número de elementos
+        n -= 2;
     }
 
-    return true;
+    return 1;
+}
+
+void puzzle_print(const char matrix[], int rows, int columns) {
+    // Guardamos el número total de columnas
+    const int total_columns = columns;
+
+    // Recorremos las filass
+    while (rows > 0) {
+        // Siempre imprimimos directamente el primer elemento de cada fila
+        printf("%c", *matrix);
+        matrix++;
+
+        // Recorremos las columnas
+        while (columns > 1) {
+            // Imprimimos el separador de columna
+            printf("%c", ';');
+
+            // Imprimimos el siguiente elemento de la fila
+            printf("%c", *matrix);
+            matrix++;
+
+            columns--;
+        }
+
+        // Restauramos el número de columnas
+        columns = total_columns;
+
+        // Imprimimos el salto de línea la final de la fila
+        printf("%c", '\n');
+
+        rows--;
+    }
 }
 
 // HECHA
-void puzzle_print(const char matrix[], int rows, int columns) {
+void puzzle_print_buffered(const char matrix[], int rows, int columns) {
     // Guardamos el número total de columnas
     const int total_columns = columns;
 
