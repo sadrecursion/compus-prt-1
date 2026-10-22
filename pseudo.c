@@ -7,34 +7,42 @@
 
 #define FILL_CHAR '#'
 
-bool search_puzzle(const char matrix[], int rows, int columns, const char string[], int x, int y) {
-    if (x >= rows || y >= columns) { return false; }
+int search_puzzle(const char matrix[], int rows, int columns, const char string[], int x, int y) {
+    // Devolvemos 0 si las coordenadas están fuera de la matriz
+    if (x >= rows || y >= columns) { return 0; }
+    if (y >= columns) { return 0; }
 
+    // Comprobamos que la palabra cabe de manera exacta
     int length = strlen(string);
-    if (columns - y < length) { return false; }
+    if (columns - y != length) { return 0; }
 
-    int i = 0;
-    int j = x * columns;
-    while (i < columns) {
-        if (matrix[j + y + i] == FILL_CHAR) { return false; }
-        i++;
+    // Comprobamos que no haya ningún símbolo de relleno por el camino
+    int position = (x * columns) + y;
+    matrix += position;
+    while (length > 0) {
+        if (*matrix == FILL_CHAR) { return 0; }
+        matrix++;
+        length--;
     }
 
-    return true;
+    return 1;
 }
 
-bool insert_puzzle(char matrix[], int rows, int columns, const char string[], int x, int y) {
-    if (!search_puzzle(matrix, rows, columns, string, x, y)) { return false; }
+int insert_puzzle(char matrix[], int rows, int columns, const char string[], int x, int y) {
+    // Si la palabra no cabe devolvemos 0
+    if (!search_puzzle(matrix, rows, columns, string, x, y)) { return 0; }
 
-    int i = 0;
-    int j = x * columns;
+    // Insertamos la palabra
+    int position = (x * columns) + y;
     int length = columns - y;
-    while (i < length) {
-        matrix[j + y + i] = string[i];
-        i++;
+    while (length > 0) {
+        *matrix = *string;
+        matrix++;
+        string++;
+        length--;
     }
 
-    return true;
+    return 1;
 }
 
 // HECHA
@@ -65,6 +73,7 @@ int fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n)
     return 1;
 }
 
+// HECHA
 void puzzle_print(const char matrix[], int rows, int columns) {
     // Guardamos el número total de columnas
     const int total_columns = columns;
