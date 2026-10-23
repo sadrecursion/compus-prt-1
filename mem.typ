@@ -130,7 +130,7 @@ con la llamada al sistema `print_char` se imprime correctamente. Pero al
 hacerlo con `print_string` se interpreta como `UTF-8` y al ser mayor que 127
 se necesitan dos bytes para representar el símbolo.
 
-Como no podemos cambair el símbolo de relleno, la única solución que queda es
+Como no podemos cambiar el símbolo de relleno, la única solución que queda es
 reservar más memoria para el texto. Sería necesario reservar memoria para una
 matriz el doble de grande ya que tenemos que representar cada caracter con 2
 bytes. Pero por motivos de simplicidad hemos decidido cambiar el diseño e
@@ -178,7 +178,6 @@ void puzzle_print(const char matrix[], int rows, int columns) {
 int search_puzzle(const char matrix[], int rows, int columns, const char string[], int x, int y) {
     // Devolvemos 0 si las coordenadas están fuera de la matriz
     if (x >= rows || y >= columns) { return 0; }
-    if (y >= columns) { return 0; }
 
     // Comprobamos que la palabra cabe de manera exacta
     int length = strlen(string);
