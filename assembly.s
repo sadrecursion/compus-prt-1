@@ -7,6 +7,8 @@ m1_fill:
     .word 1, 1
     .word 3, 3
 
+s1: .string "example"
+
 .text
 
 init_matrix:
@@ -32,78 +34,70 @@ puzzle_print:
     # a1 = filas
     # a2 = columnas
 
-    # t0 = número total de columnas
-    # t1 = longitud del string
-    # t2 = dirección del string
-    # t3 = temporal genérico
-    # t4 = separador de columna
-    # t5 = salto de línea
+    # s0 = dirección de la matriz
+    # s1 = contador de filas
+    # s2 = contador de columnas
+    # s3 = número total de columnas
 
-    mv t0, a2
+    addi sp, sp, -16
+    sw s0, 0(sp)
+    sw s1, 4(sp)
+    sw s2, 8(sp)
+    sw s3, 12(sp)
 
-    # Calculamos la longitud
-    mul t1, a1, a2
-    slli t1, t1, 1
-    addi t1, t1, 1
-
-    # Reservamos espacio en la pila
-    sub sp, sp, t1
-    mv t2, sp
-
-    li t4, 59
-    li t5, 10
+    mv s0, a0
+    mv s1, a1
+    mv s2, a2
+    mv s3, a2
 
 puzzle_print_row:
-    beqz a1, puzzle_print_end
+    beqz s1, puzzle_print_end
 
-    # Insertamos el primer elemento de la fila
-    lb t3, 0(a0)
-    sb t3, 0(t2)
-
-    addi a0, a0, 1
-    addi t2, t2, 1
+    # Imprimimos el primer elemento de la fila
+    lbu a0, 0(s0)
+    addi s0, s0, 1
+    li a7, 11
+    ecall
 
 puzzle_print_column:
-    li t3, 1
-    beq a2, t3, puzzle_print_row_end
+    li t0, 1
+    ble s2, t0, puzzle_print_row_end
 
-    # Insertamos el separador de columna
-    sb t4, 0(t2)
-    addi t2, t2, 1
+    # Imprimimos el separador de columna
+    li a0, 59
+    li a7, 11
+    ecall
 
-    # Insertamos el siguiente elemento de la fila
-    lb t3, 0(a0)
-    sb t3, 0(t2)
-    addi a0, a0, 1
-    addi t2, t2, 1
+    # Imprimimos el siguiente elemento de la fila
+    lbu a0, 0(s0)
+    addi s0, s0, 1
+    li a7, 11
+    ecall
 
-    addi a2, a2, -1
+    addi s2, s2, -1
 
     j puzzle_print_column
 
 puzzle_print_row_end:
-    # Restauramos el número total de columnas
-    mv a2, t0
+    # Restauramos el contador de columnas
+    mv s2, s3
 
-    # Insertamos el salto de línea
-    sb t5, 0(t2)
-    addi t2, t2, 1
+    # Imprimimos el salto de línea
+    li a0, 10
+    li a7, 11
+    ecall
 
-    addi a1, a1, -1
+    addi s1, s1, -1
 
     j puzzle_print_row
 
 puzzle_print_end:
-    # Insertamos el 0
-    sb zero, 0(t2)
-
-    # Imprimimos el string
-    li a7, 4
-    mv a0, sp
-    ecall
-
     # Restauramos la pila
-    add sp, sp, t1
+    lw s0, 0(sp)
+    lw s1, 4(sp)
+    lw s2, 8(sp)
+    lw s3, 12(sp)
+    addi sp, sp, 16
     jr ra
 
 fill_puzzle:
@@ -113,7 +107,7 @@ fill_puzzle:
     # a3 = dirección del vector
     # a4 = número de elementos del vector
 
-    li t0, 35
+    li t0, 182
 
 fill_puzzle_loop:
     beqz a4, fill_puzzle_true
