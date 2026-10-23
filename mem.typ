@@ -1,6 +1,8 @@
+#show <no-outline>: set heading(outlined: false)
+
 #align(center)[
-  = Estructura de Computadores
-  == Práctica 1
+  = Estructura de Computadores <no-outline>
+  == Práctica 1 <no-outline>
 
   #v(2em)
 
@@ -9,7 +11,11 @@
 ]
 
 #pagebreak()
+#outline(
+  title: [Contenido],
+)
 
+#pagebreak()
 = Función `fill_puzzle`
 #v(2em)
 
@@ -45,7 +51,6 @@ int fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n)
 ```
 
 #pagebreak()
-
 = Función `puzzle_print`
 #v(2em)
 
@@ -64,8 +69,8 @@ sistema `print_char (11)` se imprime correctamente. Pero al hacerlo con la
 llamada `print_string (4)` se interpreta como `UTF-8` y en este caso el 182 se
 representa con 2 bytes.
 
-Las dos soluciones posibles son: cambiar el símbolo de relleno o reservar más
-memoria para el texto.
+Por motivos de simplicidad hemos decidido cambiar el diseño e imprimir el texto
+símbolo a símbolo.
 
 ```c
 void puzzle_print(const char matrix[], int rows, int columns) {
@@ -98,5 +103,55 @@ void puzzle_print(const char matrix[], int rows, int columns) {
 
         rows--;
     }
+}
+```
+
+#pagebreak()
+= Función `search_puzzle`
+#v(2em)
+
+```c
+int search_puzzle(const char matrix[], int rows, int columns, const char string[], int x, int y) {
+    // Devolvemos 0 si las coordenadas están fuera de la matriz
+    if (x >= rows || y >= columns) { return 0; }
+    if (y >= columns) { return 0; }
+
+    // Comprobamos que la palabra cabe de manera exacta
+    int length = strlen(string);
+    if (columns - y != length) { return 0; }
+
+    // Comprobamos que no haya ningún símbolo de relleno por el camino
+    int position = (x * columns) + y;
+    matrix += position;
+    while (length > 0) {
+        if (*matrix == FILL_CHAR) { return 0; }
+        matrix++;
+        length--;
+    }
+
+    return 1;
+}
+```
+
+#pagebreak()
+= Función `insert_puzzle`
+#v(2em)
+
+```c
+int insert_puzzle(char matrix[], int rows, int columns, const char string[], int x, int y) {
+    // Si la palabra no cabe devolvemos 0
+    if (!search_puzzle(matrix, rows, columns, string, x, y)) { return 0; }
+
+    // Insertamos la palabra
+    int position = (x * columns) + y;
+    int length = columns - y;
+    while (length > 0) {
+        *matrix = *string;
+        matrix++;
+        string++;
+        length--;
+    }
+
+    return 1;
 }
 ```
