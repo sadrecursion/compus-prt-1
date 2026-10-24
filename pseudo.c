@@ -10,7 +10,6 @@
 int search_puzzle(const char matrix[], int rows, int columns, const char string[], int x, int y) {
     // Devolvemos 0 si las coordenadas están fuera de la matriz
     if (x >= rows || y >= columns) { return 0; }
-    if (y >= columns) { return 0; }
 
     // Comprobamos que la palabra cabe de manera exacta
     int length = strlen(string);
@@ -34,6 +33,7 @@ int insert_puzzle(char matrix[], int rows, int columns, const char string[], int
 
     // Insertamos la palabra
     int position = (x * columns) + y;
+	matrix += position;
     int length = columns - y;
     while (length > 0) {
         *matrix = *string;
