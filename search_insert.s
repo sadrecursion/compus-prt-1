@@ -1,9 +1,23 @@
 .text
 
 search_puzzle_return_zero:
+insert_puzzle_return_zero:
     # Devuelve 0 y restaura la pila
     li a0, 0
-    j search_puzzle_restore
+
+search_puzzle_restore:
+insert_puzzle_restore:
+	# Restaura la pila
+    lw ra, 0(sp)
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    lw s2, 12(sp)
+    lw s3, 16(sp)
+    lw s4, 20(sp)
+    lw s5, 24(sp)
+    addi sp, sp, 28
+
+    jr ra
 
 search_puzzle:
     # a0 = dirección de la matriz
@@ -74,25 +88,22 @@ search_puzzle_while_1_end:
     # Devuelve 1 y restaura la pila
     li a0, 1
 
-search_puzzle_restore:
-    lw ra, 0(sp)
-    lw s0, 4(sp)
-    lw s1, 8(sp)
-    lw s2, 12(sp)
-    lw s3, 16(sp)
-    lw s4, 20(sp)
-    lw s5, 24(sp)
-    addi sp, sp, 28
-
-    jr ra
-
-
-insert_puzzle_return_zero:
-    # Devuelve 0 y restaura la pila
-    li a0, 0
-    j insert_puzzle_restore 
+	j search_puzzle_restore
 
 insert_puzzle:
+    # a0 = dirección de la matriz
+    # a1 = filas
+    # a2 = columnas
+    # a3 = string
+    # a4 = coordenada x
+    # a5 = coordenada y
+
+    # s0 = dirección de la matriz
+    # s1 = filas
+    # s2 = columnas
+    # s3 = string
+    # s4 = coordenada x
+    # s5 = coordenada y
     addi sp, sp, -28
     sw ra, 0(sp)
     sw s0, 4(sp)
@@ -101,12 +112,7 @@ insert_puzzle:
     sw s3, 16(sp)
     sw s4, 20(sp)
     sw s5, 24(sp)
-    # matrix -> s0
-    # rows -> s1
-    # columns -> s2
-    # string -> s3
-    # x -> s4
-    # y -> s5
+
     mv s0, a0
     mv s1, a1
     mv s2, a2
@@ -149,15 +155,4 @@ insert_puzzle_while_1_end:
     # Devuelve 1
     li a0, 1
     
-    # Restauramos la pila
-insert_puzzle_restore:
-    lw ra, 0(sp)
-    lw s0, 4(sp)
-    lw s1, 8(sp)
-    lw s2, 12(sp)
-    lw s3, 16(sp)
-    lw s4, 20(sp)
-    lw s5, 24(sp)
-    addi sp, sp, 28
-
-    jr ra
+	j insert_puzzle_restore
