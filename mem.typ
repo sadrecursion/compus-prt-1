@@ -7,11 +7,11 @@
   #v(2em)
 
   #table(
-    columns: (auto, auto, auto, auto),
+    columns: (auto, auto, auto, auto, auto),
     stroke: none,
     align: left,
-    [Alejandro Hita Garrido], [100581162], [grupo 80], [curso 2 ing inf],
-    [Hugo Vidal Martínez], [100582295], [grupo 80], [curso 2 ing inf],
+    [Alejandro Hita Garrido], [100581162], [grupo 80], [curso 2], [informática],
+    [Hugo Vidal Martínez], [100582295], [grupo 80], [curso 2], [informática],
   )
 ]
 
@@ -77,7 +77,7 @@ Se multiplica por dos porque hay que contar los separadores de cada columna más
 los saltos de línea y se suma uno porque es necesario añadir el byte cero al final.
 
 ```c
-void puzzle_print_buffered(const char matrix[], int rows, int columns) {
+void puzzle_print(const char matrix[], int rows, int columns) {
     // Guardamos el número total de columnas
     const int total_columns = columns;
 
@@ -188,7 +188,7 @@ int search_puzzle(const char matrix[], int rows, int columns, const char string[
     int position = (x * columns) + y;
     matrix += position;
     while (length > 0) {
-        if (*matrix == FILL_CHAR) { return 0; }
+        if (*matrix == 182) { return 0; }
         matrix++;
         length--;
     }
