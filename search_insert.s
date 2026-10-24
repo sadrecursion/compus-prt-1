@@ -69,11 +69,11 @@ search_puzzle_while_1:
     addi t0, t0, -1  # length--
 
     j search_puzzle_while_1
+
 search_puzzle_while_1_end:
+    # Devuelve 1 y restaura la pila
+    li a0, 1
 
-    li a0, 1   # Devuelve 1
-
-    # Restauramos la pila
 search_puzzle_restore:
     lw ra, 0(sp)
     lw s0, 4(sp)
