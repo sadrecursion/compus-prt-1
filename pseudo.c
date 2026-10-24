@@ -33,7 +33,7 @@ int insert_puzzle(char matrix[], int rows, int columns, const char string[], int
 
     // Insertamos la palabra
     int position = (x * columns) + y;
-	matrix += position;
+    matrix += position;
     int length = columns - y;
     while (length > 0) {
         *matrix = *string;
