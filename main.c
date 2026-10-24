@@ -32,9 +32,9 @@ int insert_puzzle(char matrix[], int rows, int columns, const char string[], int
     if (!search_puzzle(matrix, rows, columns, string, x, y)) { return 0; }
 
     // Insertamos la palabra
+	int length = columns - y;
     int position = (x * columns) + y;
     matrix += position;
-    int length = columns - y;
     while (length > 0) {
         *matrix = *string;
         matrix++;
@@ -78,7 +78,7 @@ void puzzle_print(const char matrix[], int rows, int columns) {
     // Guardamos el número total de columnas
     const int total_columns = columns;
 
-    // Recorremos las filass
+    // Recorremos las filas
     while (rows > 0) {
         // Siempre imprimimos directamente el primer elemento de cada fila
         printf("%c", *matrix);
@@ -117,7 +117,7 @@ void puzzle_print_buffered(const char matrix[], int rows, int columns) {
     char string[capacity];
     char* buffer = string;
 
-    // Recorremos las filass
+    // Recorremos las filas
     while (rows > 0) {
         // Siempre insertamos directamente el primer elemento de cada fila
         *buffer = *matrix;

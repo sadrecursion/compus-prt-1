@@ -206,12 +206,12 @@ search_puzzle:
     # Avanzamos la dirección de la matriz a la posición
     add s0, s0, t1
 
-    # Comprobamos que desde la posición quepa la palabra y no haya caracteres de relleno
+    # Comprobamos que la palabra quepa y no haya caracteres de relleno
     li t1, 0
     li t2, 182
 
 search_puzzle_while_1:
-    ble t0, t1, search_puzzle_while_1_end
+    ble t0, t1, search_puzzle_while_1_end   # while (lenght > 0)
     lbu t3, 0(s0)    # Si la posicion actual contiene un caracter de relleno devuelve 0
     beq t3, t2, search_puzzle_return_zero
 
@@ -272,10 +272,10 @@ insert_puzzle:
     # Avanzamos matrix a la posición
     add s0, s0, t1
 
-    # while (length > 0)
     li t2, 0
 
 insert_puzzle_while_1:
+	# while (length > 0)
     ble t0, t2, insert_puzzle_while_1_end
     # Añadimos el byte del string correspondiente a la matriz
     lbu t3, 0(s3)
