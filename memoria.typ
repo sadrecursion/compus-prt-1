@@ -13,12 +13,13 @@
     [Alejandro Hita Garrido], [100581162], [grupo 80], [curso 2], [informática],
     [Hugo Vidal Martínez], [100582295], [grupo 80], [curso 2], [informática],
   )
-]
 
-#pagebreak()
-#outline(
-  title: [Contenido],
-)
+  #v(20%)
+
+  #outline(
+    title: [Contenido],
+  )
+]
 
 #pagebreak()
 = `fill_puzzle`
