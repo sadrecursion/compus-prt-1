@@ -174,17 +174,17 @@ void puzzle_print(const char matrix[], int rows, int columns) {
 = `search_puzzle`
 #v(2em)
 El objetivo de la función es comprobar que la palabra cabe de forma exacta y no
-hay ningún carácter de relleno donde se quiera colocar la palabra. Si es así devolverá 1.
-La primera comprobación se asegura de que la posición donde insertar la palabra
-esté dentro de la matriz, si no es así devuelve 0.
+hay ningún carácter de relleno donde se quiera colocar la palabra. Si es así
+devolverá 1. La primera comprobación se asegura de que la posición donde
+insertar la palabra esté dentro de la matriz, si no es así devuelve 0.
 
-Después comprueba que la palabra ocupe exactamente el espacio restante de la fila
-desde la columna y hasta el final, si no es así devuelve 0.
+Después comprueba que la palabra ocupe exactamente el espacio restante de la
+fila desde la columna y hasta el final, si no es así devuelve 0.
 
-El bucle comprueba que ninguna posición contenga el carácter de relleno (182), avanzando
-el puntero de la matriz y reduciendo length en cada iteración.
+El bucle comprueba que ninguna posición contenga el carácter de relleno 182,
+avanzando el puntero de la matriz y reduciendo length en cada iteración.
 
-Esta función asume que tanto x como y son valores positivos.
+Esta función asume que tanto `x` como `y` son valores positivos.
 
 ```c
 int search_puzzle(const char matrix[], int rows, int columns, const char string[], int x, int y) {
@@ -212,16 +212,19 @@ int search_puzzle(const char matrix[], int rows, int columns, const char string[
 = `insert_puzzle`
 #v(2em)
 El objetivo de la función es insertar una palabra en una posición especificada
-de la matriz. Si lo consigue devuelve 1, si no 0.
+de la matriz. Si lo consigue devuelve 1, si no devuelve 0.
 
-El primer paso consiste en comprobar si la palabra cabe mediante una llamada a `search_puzzle`.
+El primer paso consiste en comprobar si la palabra cabe mediante una llamada a
+`search_puzzle`.
 
-Una vez comprobado que la palabra cabe, se calcula la longitud que se va a insertar y la 
-posición correspondiente dentro de la matriz. A continuación se avanza el puntero de la matriz a esa posición.
+Una vez comprobado que la palabra cabe, se calcula la longitud que se va a
+insertar y la posición correspondiente dentro de la matriz. A continuación se
+avanza el puntero de la matriz a esa posición.
 
-Finalmente, se ejecuta un bucle que, en cada iteración, sustituye el carácter al que apunta el puntero
-de la matriz por el que apunta el puntero de string. Después ambos punteros avanzan una posición y se 
-reduce la longitud en una unidad. El proceso se repite hasta insertar toda la palabra.
+Finalmente, se ejecuta un bucle que, en cada iteración, sustituye el carácter
+al que apunta el puntero de la matriz por el que apunta el puntero de string.
+Después ambos punteros avanzan una posición y se reduce la longitud en una
+unidad. El proceso se repite hasta insertar toda la palabra.
 
 ```c
 int insert_puzzle(char matrix[], int rows, int columns, const char string[], int x, int y) {
