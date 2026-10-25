@@ -1,13 +1,12 @@
 .data
 
 m1_data: .space 25 # 5x5
-
 .align 2
 m1_fill:
     .word 1, 1
     .word 3, 3
 
-s1: .string "example"
+s1: .string "casa"
 
 .text
 
@@ -143,7 +142,7 @@ insert_puzzle_return_zero:
 
 search_puzzle_restore:
 insert_puzzle_restore:
-	# Restaura la pila
+    # Restaura la pila
     lw ra, 0(sp)
     lw s0, 4(sp)
     lw s1, 8(sp)
@@ -224,7 +223,7 @@ search_puzzle_while_1_end:
     # Devuelve 1 y restaura la pila
     li a0, 1
 
-	j search_puzzle_restore
+    j search_puzzle_restore
 
 insert_puzzle:
     # a0 = dirección de la matriz
@@ -275,7 +274,7 @@ insert_puzzle:
     li t2, 0
 
 insert_puzzle_while_1:
-	# while (length > 0)
+    # while (length > 0)
     ble t0, t2, insert_puzzle_while_1_end
     # Añadimos el byte del string correspondiente a la matriz
     lbu t3, 0(s3)
@@ -288,11 +287,26 @@ insert_puzzle_while_1:
     j insert_puzzle_while_1
 
 insert_puzzle_while_1_end:
-
     # Devuelve 1
     li a0, 1
-    
-	j insert_puzzle_restore
+    j insert_puzzle_restore
+
+print_new_line:
+    li t0, 10
+    li a7, 11
+    ecall
+    jr ra
+
+print_search_result:
+    # a0 = resultado
+    li a7, 11
+    ecall
+
+    li a0, 10
+    li a7, 11
+    ecall
+
+    jr ra
 
 main:
     # Inicializa la matriz 1
@@ -305,6 +319,7 @@ main:
     li a1, 5
     li a2, 5
     jal ra, puzzle_print
+    jal ra, print_new_line
 
     # Rellenamos la matriz 1
     la a0, m1_data
@@ -319,6 +334,17 @@ main:
     li a1, 5
     li a2, 5
     jal ra, puzzle_print
+    jal ra, print_new_line
+
+    # Comprobar si caben algunas palabras
+    la a0, m1_data
+    li a1, 5
+    li a1, 5
+    la a3, s1
+    li a4, 3
+    li a5, 3
+    jal ra, search_puzzle
+    jal ra, print_search_result
 
 exit:
     li a7, 10
