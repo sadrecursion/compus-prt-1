@@ -32,7 +32,7 @@ int insert_puzzle(char matrix[], int rows, int columns, const char string[], int
     if (!search_puzzle(matrix, rows, columns, string, x, y)) { return 0; }
 
     // Insertamos la palabra
-	int length = columns - y;
+    int length = columns - y;
     int position = (x * columns) + y;
     matrix += position;
     while (length > 0) {
