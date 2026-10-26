@@ -7,6 +7,7 @@ m1_fill:
     .word 3, 3
 
 s1: .string "casa"
+s2: .string "dos"
 
 .text
 
@@ -191,7 +192,7 @@ search_puzzle:
     # Comprobamos que la palabra cabe de manera exacta
     # length = strlen(string) -> t0
     mv a0, s3
-    jal ra, strlen
+    jal ra, length
     mv t0, a0
 
     # if (columns - y != length) {return 0}
@@ -299,7 +300,7 @@ print_new_line:
 
 print_search_result:
     # a0 = resultado
-    li a7, 11
+    li a7, 1
     ecall
 
     li a0, 10
