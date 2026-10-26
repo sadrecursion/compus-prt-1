@@ -112,33 +112,39 @@ fill_puzzle:
 fill_puzzle_loop:
     beqz a4, fill_puzzle_true
 
+    # Guardamos las coordenadas
     lw t1, 0(a3)
     lw t2, 4(a3)
     addi a3, a3, 8
 
+    # Si están fuera de la matriz devolvemos 0
     bge t1, a1, fill_puzzle_false
     bge t2, a2, fill_puzzle_false
 
+    # Calculamos la posición
     mul t3, t1, a2
     add t3, t3, t2
     add t3, t3, a0
 
+    # Rellenamos la matriz
     sb t0, 0(t3)
 
     addi a4, a4, -2
     j fill_puzzle_loop
 
 fill_puzzle_false:
+    # Devolvemos 0
     li a0, 0
     jr ra
 
 fill_puzzle_true:
+    # Devolvemos 1
     li a0, 1
     jr ra
 
 search_puzzle_return_zero:
 insert_puzzle_return_zero:
-    # Devuelve 0 y restaura la pila
+    # Devolvemos 0 y restauramos la pila
     li a0, 0
 
 search_puzzle_restore:
@@ -186,37 +192,36 @@ search_puzzle:
     mv s5, a5
 
     # Devuelve 0 si las coordenadas están fuera de la matriz
-    bge s4, s1, search_puzzle_return_zero    # x >= rows
-    bge s5, s2, search_puzzle_return_zero    # y >= columns
+    bge s4, s1, search_puzzle_return_zero
+    bge s5, s2, search_puzzle_return_zero
 
-    # Comprobamos que la palabra cabe de manera exacta
-    # length = strlen(string) -> t0
+    # Obtenemos la longitud de la palabra
     mv a0, s3
     jal ra, length
-    mv t0, a0
 
-    # if (columns - y != length) {return 0}
-    sub t1, s2, s5
-    bne t0, t1, insert_puzzle_return_zero
+    # Comprobamos que la palabra cabe de manera exacta
+    sub t0, s2, s5
+    bne a0, t0, search_puzzle_return_zero
 
-    # position = x * columns + y -> t1
-    mul t1, s4, s2   # position = x * columns
-    add t1, t1, s5   # position = position + y
+    # Calculamos la posición
+    mul t0, s4, s2
+    add t0, t0, s5
 
     # Avanzamos la dirección de la matriz a la posición
-    add s0, s0, t1
+    add s0, s0, t0
 
-    # Comprobamos que la palabra quepa y no haya caracteres de relleno
-    li t1, 0
-    li t2, 182
+    # Comprobamos que no hayan caracteres de relleno
+    li t1, 182
 
 search_puzzle_while_1:
-    ble t0, t1, search_puzzle_while_1_end   # while (lenght > 0)
-    lbu t3, 0(s0)    # Si la posicion actual contiene un caracter de relleno devuelve 0
-    beq t3, t2, search_puzzle_return_zero
+    beqz a0, search_puzzle_while_1_end
 
-    addi s0, s0, 1   # matrix++
-    addi t0, t0, -1  # length--
+    # Si la posicion actual contiene un caracter de relleno devuelve 0
+    lbu t2, 0(s0)
+    beq t2, t1, search_puzzle_return_zero
+
+    addi s0, s0, 1
+    addi a0, a0, -1
 
     j search_puzzle_while_1
 
@@ -256,44 +261,40 @@ insert_puzzle:
     mv s4, a4
     mv s5, a5
 
-    # Si la palabra no cabe se devuelve 0
-    jal ra, search_puzzle     # Los parametros vienen en orden
+    # Si la palabra no cabe devolvemos 0
+    jal ra, search_puzzle
+    beqz a0, insert_puzzle_return_zero
 
-    # if (!search_puzzle) {return 0}
-    li t0, 0
-    beq a0, t0, insert_puzzle_return_zero
-
-    # length = columns - y -> t0
+    # Calculamos la longitud
     sub t0, s2, s5
 
-    # position = x * columns + y -> t1
-    mul t1, s4, s2   # position = x * columns
-    add t1, t1, s5   # position = position + y
-    # Avanzamos matrix a la posición
+    # Calculamos la posición
+    mul t1, s4, s2
+    add t1, t1, s5
+
+    # Avanzamos la matriz a la posición
     add s0, s0, t1
 
-    li t2, 0
+insert_puzzle_loop:
+    beqz t0, insert_puzzle_loop_end
 
-insert_puzzle_while_1:
-    # while (length > 0)
-    ble t0, t2, insert_puzzle_while_1_end
-    # Añadimos el byte del string correspondiente a la matriz
-    lbu t3, 0(s3)
-    sb t3, 0(s0)
+    # Rellenamos la matriz
+    lbu t2, 0(s3)
+    sb t2, 0(s0)
 
-    addi s0, s0, 1   # matrix++
-    addi s3, s3, 1   # string++
-    addi t0, t0, -1  # length--
+    addi s0, s0, 1
+    addi s3, s3, 1
+    addi t0, t0, -1
 
-    j insert_puzzle_while_1
+    j insert_puzzle_loop
 
-insert_puzzle_while_1_end:
-    # Devuelve 1
+insert_puzzle_loop_end:
+    # Devolvemos 1
     li a0, 1
     j insert_puzzle_restore
 
 print_new_line:
-    li t0, 10
+    li a0, 10
     li a7, 11
     ecall
     jr ra
@@ -341,11 +342,27 @@ main:
     la a0, m1_data
     li a1, 5
     li a1, 5
-    la a3, s1
-    li a4, 3
-    li a5, 3
+    la a3, s2
+    li a4, 1
+    li a5, 2
     jal ra, search_puzzle
     jal ra, print_search_result
+
+    # Insertamos una palabra
+    la a0, m1_data
+    li a1, 5
+    li a1, 5
+    la a3, s2
+    li a4, 1
+    li a5, 2
+    jal ra, insert_puzzle
+
+    # Imprime la matriz 1
+    la a0, m1_data
+    li a1, 5
+    li a2, 5
+    jal ra, puzzle_print
+    jal ra, print_new_line
 
 exit:
     li a7, 10
