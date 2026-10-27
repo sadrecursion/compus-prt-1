@@ -32,11 +32,6 @@ que las coordenadas extraídas están dentro de la matriz. En el caso afirmativo
 rellenamos esa posición de la matriz. En el caso contrario la función devuelve 0.
 Finalmente, cuando el bucle acaba devolvemos 1.
 
-Esta función asume que `n` es un número par positivo. En caso de ser impar se
-accede a una dirección de memoria que se encuentra fuera del vector. En el caso
-de no poder asumir que `n` sea siempre un número par es necesario añadir una
-comprobación.
-
 ```c
 int fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n) {
     int x;
@@ -50,6 +45,8 @@ int fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n)
         // Si están fuera de la matriz devolvemos 0
         if (x >= rows) { return 0; }
         if (y >= columns) { return 0; }
+        if (x < 0) { return 0; }
+        if (y < 0) { return 0; }
 
         // Rellenamos la matriz
         matrix[x * columns + y] = 182;
@@ -174,6 +171,7 @@ void puzzle_print(const char matrix[], int rows, int columns) {
 #pagebreak()
 = `search_puzzle`
 #v(2em)
+
 El objetivo de la función es comprobar que la palabra cabe de forma exacta y no
 hay ningún carácter de relleno donde se quiera colocar la palabra. Si es así
 devolverá 1. La primera comprobación se asegura de que la posición donde
@@ -212,6 +210,7 @@ int search_puzzle(const char matrix[], int rows, int columns, const char string[
 #pagebreak()
 = `insert_puzzle`
 #v(2em)
+
 El objetivo de la función es insertar una palabra en una posición especificada
 de la matriz. Si lo consigue devuelve 1, si no devuelve 0.
 
@@ -246,3 +245,65 @@ int insert_puzzle(char matrix[], int rows, int columns, const char string[], int
     return 1;
 }
 ```
+
+#pagebreak()
+= Pruebas
+#v(2em)
+
+Hemos implementado una función `init_matrix` la cual recibe la dirección de una
+matriz y el número de elementos que tiene en total. Esta función sirve para
+escribir un espacio en todos los elementos de la matriz. También se puede
+utilizar para limpiar la matriz o dejarla vacía.
+
+== `fill_puzzle`
+Para probar esta función hemos elegido una matriz inicializada de dimensiones
+arbitrarias. En este caso hemos seleccionado una de dimensiones $5 x 5$ pero
+podría ser cualquier otra. Para cada prueba imprimimos la matriz antes y
+después de llamar a la función `fill_puzzle` junto con el valor que devuelve.
+
+No vamos a probar los casos en los que el número de elementos no es el adecuado
+ya que no tenemos manera de comprobar esos datos y esperamos que siempre sean
+los adecuados.
+
+#table(
+  columns: (auto, auto, auto, auto),
+  stroke: 0.5pt + luma(150),
+  table.header(
+    [*Datos a introducir*], [*Descripcción de la prueba*], [*Resultado esperado*], [*Resultado obtenido*]
+  ),
+
+  [
+    Dos coordenadas válidas y repetidas.
+  ],
+  [
+    Queremos ver si se puede escribir sobre otros caracteres de rellenos.
+  ],
+  [
+    Nada raro, la misma coordenada se rellena dos veces y devuelve 1.
+  ],
+  [
+    El esperado.
+  ],
+
+  [
+    Una coordenada fuera del rango, por ejemplo, $(-3, 8)$.
+  ],
+  [
+    Queremos ver lo que pasa cuando tenemos una coordenada fuera de las dimensiones
+    de nuestra matriz.
+  ],
+  [
+    Ninguna modificación a la matriz y que devuelva el número 0.
+  ],
+  [
+    El esperado.
+  ],
+)
+
+== `puzzle_print`
+No hemos realizado pruebas adicionales para esta función. Siempre y cuando las
+dimensiones de la matriz son las adecuadas no hay casos extremos.
+
+== `search_puzzle`
+
+== `insert_puzzle`
