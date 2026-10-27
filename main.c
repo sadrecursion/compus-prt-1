@@ -62,6 +62,8 @@ int fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n)
         // Si están fuera de la matriz devolvemos 0
         if (x >= rows) { return 0; }
         if (y >= columns) { return 0; }
+        if (x < 0) { return 0; }
+        if (y < 0) { return 0; }
 
         // Rellenamos la matriz
         matrix[x * columns + y] = FILL_CHAR;

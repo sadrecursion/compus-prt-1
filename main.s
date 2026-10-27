@@ -125,6 +125,7 @@ fill_puzzle_loop:
     bge t1, a1, fill_puzzle_false
     bge t2, a2, fill_puzzle_false
 
+
     # Calculamos la posición
     mul t3, t1, a2
     add t3, t3, t2
