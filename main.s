@@ -1,6 +1,8 @@
 .data
 
+result_str: .string "result: "
 test_fill_puzzle_str: .string "test fill_puzzle\n"
+test_search_puzzle_str: .string "test search_puzzle\n"
 
 m1_data: .space 25 # 5x5
 .align 2
@@ -303,6 +305,12 @@ print_new_line:
     ecall
     jr ra
 
+print_space:
+    li a0, 32
+    li a7, 11
+    ecall
+    jr ra
+
 print_search_result:
     # a0 = resultado
     li a7, 1
@@ -321,9 +329,10 @@ print_vector:
     # s0 = dirección del vector
     # s1 = número de elementos del vector
 
-    addi sp, sp, -8
-    sw s0, 0(sp)
-    sw s1, 4(sp)
+    addi sp, sp, -12
+    sw ra, 0(sp)
+    sw s0, 4(sp)
+    sw s1, 8(sp)
 
     mv s0, a0
     mv s1, a1
@@ -331,9 +340,7 @@ print_vector:
 print_vector_loop:
     beqz s1, print_vector_end
 
-    li a0, 32
-    li a7, 11
-    ecall
+    jal ra, print_space
 
     lw a0, 0(s0)
     li a7, 1
@@ -345,6 +352,35 @@ print_vector_loop:
     j print_vector_loop
 
 print_vector_end:
+    lw ra, 0(sp)
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    addi sp, sp, 12
+    jr ra
+
+print_dimensions:
+    # a0 = columnas
+    # a1 = filas
+
+    addi sp, sp, -8
+    sw s0, 0(sp)
+    sw s1, 4(sp)
+
+    mv s0, a0
+    mv s1, a1
+
+    mv a0, s0
+    li a7, 1
+    ecall
+
+    li a0, 'x'
+    li a7, 11
+    ecall
+
+    mv a0, s1
+    li a7, 1
+    ecall
+
     lw s0, 0(sp)
     lw s1, 4(sp)
     addi sp, sp, 8
@@ -362,14 +398,16 @@ test_fill_puzzle:
     # s2 = número de columnas
     # s3 = dirección vector
     # s4 = número de elementos del vector
+    # s5 = valor devuelto
 
-    addi sp, sp, -24
+    addi sp, sp, -28
     sw ra, 0(sp)
     sw s0, 4(sp)
     sw s1, 8(sp)
     sw s2, 12(sp)
     sw s3, 16(sp)
     sw s4, 20(sp)
+    sw s5, 24(sp)
 
     mv s0, a0
     mv s1, a1
@@ -384,37 +422,22 @@ test_fill_puzzle:
 
     # Imprime las dimensiones de la matriz
     mv a0, s1
-    li a7, 1
-    ecall
-
-    li a0, 'x'
-    li a7, 11
-    ecall
-
-    mv a0, s2
-    li a7, 1
-    ecall
+    mv a1, s2
+    jal ra, print_dimensions
 
     mv a0, s3
     mv a1, s4
     jal ra, print_vector
 
-    li a0, 10
-    li a7, 11
-    ecall
-
-    li a0, 10
-    li a7, 11
-    ecall
+    jal ra, print_new_line
+    jal ra, print_new_line
 
     # Imprime la matriz
     mv a0, s0
     mv a1, s1
     mv a2, s2
     jal ra, puzzle_print
-    li a0, 10
-    li a7, 11
-    ecall
+    jal ra, print_new_line
 
     # Rellenamos la matriz
     mv a0, s0
@@ -423,15 +446,27 @@ test_fill_puzzle:
     mv a3, s3
     mv a4, s4
     jal ra, fill_puzzle
+    mv s5, a0
 
     # Imprime la matriz
     mv a0, s0
     mv a1, s1
     mv a2, s2
     jal ra, puzzle_print
-    li a0, 10
-    li a7, 11
+
+    jal ra, print_new_line
+
+    # Imprime el valor devuelto
+    la a0, result_str
+    li a7, 4
     ecall
+
+    mv a0, s5
+    li a7, 1
+    ecall
+
+    jal ra, print_new_line
+    jal ra, print_new_line
 
     lw ra, 0(sp)
     lw s0, 4(sp)
@@ -439,8 +474,87 @@ test_fill_puzzle:
     lw s2, 12(sp)
     lw s3, 16(sp)
     lw s4, 20(sp)
-    addi sp, sp, 24
+    lw s5, 24(sp)
+    addi sp, sp, 28
 
+    jr ra
+
+test_search_puzzle:
+    # a0 = dirección de la matriz
+    # a1 = filas
+    # a2 = columnas
+    # a3 = string
+    # a4 = coordenada x
+    # a5 = coordenada y
+
+    # s0 = dirección de la matriz
+    # s1 = filas
+    # s2 = columnas
+    # s3 = string
+    # s4 = coordenada x
+    # s5 = coordenada y
+
+    addi sp, sp, -28
+    sw ra, 0(sp)
+    sw s0, 4(sp)
+    sw s1, 8(sp)
+    sw s2, 12(sp)
+    sw s3, 16(sp)
+    sw s4, 20(sp)
+    sw s5, 24(sp)
+
+    mv s0, a0
+    mv s1, a1
+    mv s2, a2
+    mv s3, a3
+    mv s4, a4
+    mv s5, a5
+
+    la a0, test_search_puzzle_str
+    li a7, 4
+    ecall
+
+    mv a0, s1
+    mv a1, s2
+    jal ra, print_dimensions
+    jal ra, print_space
+
+    # Imprime la palabra que buscamos
+    mv a0, s3
+    li a7, 4
+    ecall
+
+    jal ra, print_new_line
+    jal ra, print_new_line
+
+    la a0, result_str
+    li a7, 4
+    ecall
+
+    # Comprobamos si la palabra cabe
+    mv a0, s0
+    mv a1, s1
+    mv a2, s2
+    mv a3, s3
+    mv a4, s4
+    mv a5, s5
+    jal ra, search_puzzle
+
+    # Imprimimos el resultado de la comprobación
+    li a7, 1
+    ecall
+
+    jal ra, print_new_line
+    jal ra, print_new_line
+
+    lw ra, 0(sp)
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    lw s2, 12(sp)
+    lw s3, 16(sp)
+    lw s4, 20(sp)
+    lw s5, 24(sp)
+    addi sp, sp, 28
     jr ra
 
 main:
@@ -456,6 +570,15 @@ main:
     la a3, m1_fill
     li a4, 4
     jal ra, test_fill_puzzle
+
+    # Test search_puzzle
+    la a0, m1_data
+    li a1, 5
+    li a2, 5
+    la a3, s1
+    li a4, 3
+    li a5, 3
+    jal ra, test_search_puzzle
 
     j exit
 
