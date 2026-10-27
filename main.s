@@ -1,10 +1,14 @@
 .data
 
+test_fill_puzzle_str: .string "test fill_puzzle\n"
+
 m1_data: .space 25 # 5x5
 .align 2
-m1_fill:
-    .word 1, 1
-    .word 3, 3
+m1_fill: .word 1, 1, 3, 3
+
+m2_data: .space 50 # 10x5
+.align 2
+m2_fill: .word 4, 3
 
 s1: .string "casa"
 s2: .string "dos"
@@ -310,11 +314,150 @@ print_search_result:
 
     jr ra
 
+print_vector:
+    # a0 = dirección del vector
+    # a1 = número de elementos del vector
+
+    # s0 = dirección del vector
+    # s1 = número de elementos del vector
+
+    addi sp, sp, -8
+    sw s0, 0(sp)
+    sw s1, 4(sp)
+
+    mv s0, a0
+    mv s1, a1
+
+print_vector_loop:
+    beqz s1, print_vector_end
+
+    li a0, 32
+    li a7, 11
+    ecall
+
+    lw a0, 0(s0)
+    li a7, 1
+    ecall
+
+    addi s0, s0, 4
+    addi s1, s1, -1
+
+    j print_vector_loop
+
+print_vector_end:
+    lw s0, 0(sp)
+    lw s1, 4(sp)
+    addi sp, sp, 8
+    jr ra
+
+test_fill_puzzle:
+    # a0 = dirección de la matriz
+    # a1 = número de filas
+    # a2 = número de columnas
+    # a3 = dirección vector
+    # a4 = número de elementos del vector
+
+    # s0 = dirección de la matriz
+    # s1 = número de filas
+    # s2 = número de columnas
+    # s3 = dirección vector
+    # s4 = número de elementos del vector
+
+    addi sp, sp, -24
+    sw ra, 0(sp)
+    sw s0, 4(sp)
+    sw s1, 8(sp)
+    sw s2, 12(sp)
+    sw s3, 16(sp)
+    sw s4, 20(sp)
+
+    mv s0, a0
+    mv s1, a1
+    mv s2, a2
+    mv s3, a3
+    mv s4, a4
+
+    # Imprime el test
+    la a0, test_fill_puzzle_str
+    li a7, 4
+    ecall
+
+    # Imprime las dimensiones de la matriz
+    mv a0, s1
+    li a7, 1
+    ecall
+
+    li a0, 'x'
+    li a7, 11
+    ecall
+
+    mv a0, s2
+    li a7, 1
+    ecall
+
+    mv a0, s3
+    mv a1, s4
+    jal ra, print_vector
+
+    li a0, 10
+    li a7, 11
+    ecall
+
+    li a0, 10
+    li a7, 11
+    ecall
+
+    # Imprime la matriz
+    mv a0, s0
+    mv a1, s1
+    mv a2, s2
+    jal ra, puzzle_print
+    li a0, 10
+    li a7, 11
+    ecall
+
+    # Rellenamos la matriz
+    mv a0, s0
+    mv a1, s1
+    mv a2, s2
+    mv a3, s3
+    mv a4, s4
+    jal ra, fill_puzzle
+
+    # Imprime la matriz
+    mv a0, s0
+    mv a1, s1
+    mv a2, s2
+    jal ra, puzzle_print
+    li a0, 10
+    li a7, 11
+    ecall
+
+    lw ra, 0(sp)
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    lw s2, 12(sp)
+    lw s3, 16(sp)
+    lw s4, 20(sp)
+    addi sp, sp, 24
+
+    jr ra
+
 main:
     # Inicializa la matriz 1
     la a0, m1_data
-    la a1, 25
+    li a1, 25
     jal ra, init_matrix
+
+    # Test fill_puzzle
+    la a0, m1_data
+    li a1, 5
+    li a2, 5
+    la a3, m1_fill
+    li a4, 4
+    jal ra, test_fill_puzzle
+
+    j exit
 
     # Imprime la matriz 1
     la a0, m1_data
