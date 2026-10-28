@@ -25,7 +25,7 @@
 = `fill_puzzle`
 #v(2em)
 
-El funcionamiento se basa en un bucle que recorre los elementos del vector de
+El funciónamiento se basa en un bucle que recorre los elementos del vector de
 dos en dos. Esto significa que por cada iteración del bucle extraemos dos
 elementos consecutivos del vector. Lo que hacemos a continuación es comprobar
 que las coordenadas extraídas están dentro de la matriz. En el caso afirmativo
@@ -64,7 +64,7 @@ int fill_puzzle(char matrix[], int rows, int columns, const int vector[], int n)
 #v(2em)
 
 La primera versión de esta función tenía como objetivo calcular la cantidad de
-caracteres a imprimir para una matriz dada de dimensiones $n times m$ y
+carácteres a imprimir para una matriz dada de dimensiones $n times m$ y
 construir la cadena de texto en memoria para realizar una única llamada al
 sistema al final de la función. Esto evita tener que imprimir cada símbolo de
 manera individual y por lo tanto una llamada al sistema por cada uno. La
@@ -121,7 +121,7 @@ void puzzle_print(const char matrix[], int rows, int columns) {
 }
 ```
 
-Sin embargo, cuando hemos probado a imprimir una matriz con algunos caracteres
+Sin embargo, cuando hemos probado a imprimir una matriz con algunos carácteres
 de relleno, estos no se imprimen bien. Esto es porque el símbolo de relleno es
 el 182 y como es mayor que 127 solo existe en ASCII extendido. Al imprimirlo
 con la llamada al sistema `print_char` se imprime correctamente. Pero al
@@ -269,14 +269,14 @@ los adecuados.
   columns: (auto, auto, auto, auto),
   stroke: 0.5pt + luma(150),
   table.header(
-    [*Datos a introducir*], [*Descripcción de la prueba*], [*Resultado esperado*], [*Resultado obtenido*]
+    [*Datos a introducir*], [*Descripción de la prueba*], [*Resultado esperado*], [*Resultado obtenido*]
   ),
 
   [
     Dos coordenadas válidas y repetidas.
   ],
   [
-    Queremos ver si se puede escribir sobre otros caracteres de rellenos.
+    Queremos ver si se puede escribir sobre otros carácteres de rellenos.
   ],
   [
     Nada raro, la misma coordenada se rellena dos veces y devuelve 1.
@@ -305,5 +305,114 @@ No hemos realizado pruebas adicionales para esta función. Siempre y cuando las
 dimensiones de la matriz son las adecuadas no hay casos extremos.
 
 == `search_puzzle`
+Para las pruebas de esta función usaremos la matriz 2x4.
+
+Se supone que las coordenadas son mayores que 0.
+
+#table(
+  columns: (auto, auto, auto, auto),
+  stroke: 0.5pt + luma(150),
+  table.header(
+    [*Datos a introducir*], [*Descripción de la prueba*], [*Resultado esperado*], [*Resultado obtenido*]
+  ),
+
+  [
+    palabra = "abc", x = 1, y = 1  ],
+  [
+    Buscar una palabra en una fila distinta de la primera, comenzando en una columna intermedia.
+  ],
+  [
+    Devuelve 1, porque la palabra coincide exactamente con las columnas restantes de la fila.
+  ],
+  [
+    1
+  ],
+  [ 
+    palabra = "a", x = 2, y = 0
+  ],
+  [
+    Introducir una coordenada de fila igual al número de filas.
+  ],
+  [
+    Devuelve 0, porque la coordenada está fuera de la matriz.
+  ],
+  [
+    0
+  ],
+
+  [ 
+    palabra = "hola", x = 2, y = 0
+  ],
+  [
+    Intentar escribir en las dos últimas columnas de la primera fila y en las dos primeras de la segunda.
+  ],
+  [
+    Devuelve 0, porque la palabra no cabe en la primera fila.
+  ],
+  [
+    0
+  ],
+
+  [ 
+    palabra = "está", x = 0, y = 0
+  ],
+  [
+    Comprobar el resultado de la función al introducir una palabra que contiene un carácter especial UTF-8
+    como una letra con tilde o el carácter de relleno 182.
+  ],
+  [
+    Devuelve 0, porque el carácter `á` se interpreta como dos bytes por lo que la longitud aumenta en 1 y no cabe
+    (parece que ocupa 4 bytes pero realmente ocupa 5). Esta palabra habría que representarla con una codificación en la
+    que el carácter especial se representa como un byte específico:
+    `string: 
+    .ascii "est"
+    .byte 225
+    .byte 0` 
+
+  ],
+  [
+    0
+  ],
+)
 
 == `insert_puzzle`
+
+Esta función se basa principalmente en la función `search_puzzle`, por lo que si esta
+funcióna correctamente, `insert_puzzle` también lo va a hacer.
+
+
+#table(
+  columns: (auto, auto, auto, auto),
+  stroke: 0.5pt + luma(150),
+  table.header(
+    [*Datos a introducir*], [*Descripción de la prueba*], [*Resultado esperado*], [*Resultado obtenido*]
+  ),
+
+  [
+    palabra = "ABC", x = 1, y = 1  ],
+  [
+    Insertar una palabra en la segunda fila y la segunda columna.
+  ],
+  [
+    Inserta la palabra correctamente porque esta cabe en la posición solicitada.
+  ],
+  [
+    XXXX XABC
+  ],
+
+  [ 
+    palabra = "esá", x = 0, y = 0
+  ],
+  [
+    Comprobar el resultado de la función al introducir una palabra que contiene un carácter especial UTF-8
+    como una letra con tilde o el carácter de relleno 182.
+  ],
+  [
+    La palabra ocupa 4 bytes por lo que si cabe, pero el carácter especial esta dividido en dos bytes,
+    por lo que la función no inserta el carácter especial `á` sino dos carácteres ASCII diferentes,
+    que corresponden a cada byte de `á`.
+  ],
+  [
+    esÃ¡ XXXX
+  ],
+)
