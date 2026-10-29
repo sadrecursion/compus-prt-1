@@ -1,5 +1,7 @@
 #show <no-outline>: set heading(outlined: false)
 
+#set table.cell(breakable: false)
+
 #align(center + horizon)[
   = Estructura de Computadores <no-outline>
   == Práctica 1 <no-outline>
@@ -257,13 +259,13 @@ utilizar para limpiar la matriz o dejarla vacía.
 
 == `fill_puzzle`
 Para probar esta función hemos elegido una matriz inicializada de dimensiones
-arbitrarias. En este caso hemos seleccionado una de dimensiones $5 x 5$ pero
+arbitrarias. En este caso hemos seleccionado una de dimensiones $5 times 5$ pero
 podría ser cualquier otra. Para cada prueba imprimimos la matriz antes y
 después de llamar a la función `fill_puzzle` junto con el valor que devuelve.
 
 No vamos a probar los casos en los que el número de elementos no es el adecuado
 ya que no tenemos manera de comprobar esos datos y esperamos que siempre sean
-los adecuados.
+correctos.
 
 #table(
   columns: (auto, auto, auto, auto),
@@ -273,7 +275,7 @@ los adecuados.
   ),
 
   [
-    Dos coordenadas válidas y repetidas.
+    Dos coordenadas válidas y repetidas. Por ejemplo el vector 2, 3, 2, 3.
   ],
   [
     Queremos ver si se puede escribir sobre otros carácteres de rellenos.
@@ -301,13 +303,20 @@ los adecuados.
 )
 
 == `puzzle_print`
-No hemos realizado pruebas adicionales para esta función. Siempre y cuando las
-dimensiones de la matriz son las adecuadas no hay casos extremos.
+Nos hemos dado cuenta de que si utilizamos una palabra escrita entre comillas
+hay algunos caracteres que hacen que la matriz no se imprima bien. La explicación,
+que hemos encontrado es la misma que la dada en la sección `puzzle_print`.
+
+```asm
+.data
+ejemplo: .string "cálculo"
+```
+
+#pagebreak()
 
 == `search_puzzle`
-Para las pruebas de esta función usaremos la matriz 2x4.
-
-Se supone que las coordenadas son mayores que 0.
+Para las pruebas de esta función usaremos una matriz de dimensiones $2 times
+4$.
 
 #table(
   columns: (auto, auto, auto, auto),
@@ -317,18 +326,21 @@ Se supone que las coordenadas son mayores que 0.
   ),
 
   [
-    palabra = "abc", x = 1, y = 1  ],
-  [
-    Buscar una palabra en una fila distinta de la primera, comenzando en una columna intermedia.
+    La palabra "abc" y la coordenada $(1, 1)$.
   ],
   [
-    Devuelve 1, porque la palabra coincide exactamente con las columnas restantes de la fila.
+    Buscar una palabra en una fila distinta de la primera, comenzando en una
+    columna intermedia.
   ],
   [
-    1
+    Devuelve 1 porque la palabra coincide exactamente con las columnas
+    restantes de la fila.
+  ],
+  [
+    El esperado.
   ],
   [ 
-    palabra = "a", x = 2, y = 0
+    La palabra "a" y la coordenada $(2, 0)$.
   ],
   [
     Introducir una coordenada de fila igual al número de filas.
@@ -337,48 +349,54 @@ Se supone que las coordenadas son mayores que 0.
     Devuelve 0, porque la coordenada está fuera de la matriz.
   ],
   [
-    0
+    El esperado.
   ],
 
-  [ 
-    palabra = "hola", x = 2, y = 0
+  [
+    La palabra "hola" y la coordenada $(2, 0)$.
   ],
   [
-    Intentar escribir en las dos últimas columnas de la primera fila y en las dos primeras de la segunda.
+    Intentar escribir en las dos últimas columnas de la primera fila y en las
+    dos primeras de la segunda.
   ],
   [
     Devuelve 0, porque la palabra no cabe en la primera fila.
   ],
   [
-    0
+    El esperado.
   ],
 
-  [ 
-    palabra = "está", x = 0, y = 0
+  [
+    La palabra "está" y la coordenada $(0, 0)$.
   ],
   [
-    Comprobar el resultado de la función al introducir una palabra que contiene un carácter especial UTF-8
-    como una letra con tilde o el carácter de relleno 182.
+    Comprobar el resultado de la función al introducir una palabra que contiene
+    un carácter especial `UTF-8` como una letra con tilde o el carácter de
+    relleno 182.
   ],
   [
-    Devuelve 0, porque el carácter `á` se interpreta como dos bytes por lo que la longitud aumenta en 1 y no cabe
-    (parece que ocupa 4 bytes pero realmente ocupa 5). Esta palabra habría que representarla con una codificación en la
+    Devuelve 0, porque el carácter `á` se interpreta como dos bytes por lo que
+    la longitud aumenta en 1 y no cabe (parece que ocupa 4 bytes pero realmente
+    ocupa 5). Esta palabra habría que representarla con una codificación en la
     que el carácter especial se representa como un byte específico:
-    `string: 
-    .ascii "est"
-    .byte 225
-    .byte 0` 
-
+    ```asm
+    string: 
+      .ascii "est"
+      .byte 225
+      .byte 0
+    ```
   ],
   [
-    0
+    El esperado.
   ],
 )
 
+#pagebreak()
+
 == `insert_puzzle`
 
-Esta función se basa principalmente en la función `search_puzzle`, por lo que si esta
-funcióna correctamente, `insert_puzzle` también lo va a hacer.
+Esta función se basa principalmente en la función `search_puzzle`, por lo que
+si esta funcióna correctamente, `insert_puzzle` también lo va a hacer.
 
 
 #table(
@@ -389,30 +407,34 @@ funcióna correctamente, `insert_puzzle` también lo va a hacer.
   ),
 
   [
-    palabra = "ABC", x = 1, y = 1  ],
+    La palabra "ABC" y la coordenada $(1, 1)$.
+  ],
   [
     Insertar una palabra en la segunda fila y la segunda columna.
   ],
   [
-    Inserta la palabra correctamente porque esta cabe en la posición solicitada.
+    Devuelve 1 e inserta la palabra correctamente porque esta cabe en la
+    posición solicitada.
   ],
   [
-    XXXX XABC
+    `XXXX XABC`
   ],
 
-  [ 
-    palabra = "esá", x = 0, y = 0
+  [
+    La palabra "esá" y la coordenada $(0, 0)$.
   ],
   [
-    Comprobar el resultado de la función al introducir una palabra que contiene un carácter especial UTF-8
-    como una letra con tilde o el carácter de relleno 182.
+    Comprobar el resultado de la función al introducir una palabra que contiene
+    un carácter especial UTF-8 como una letra con tilde o el carácter de
+    relleno 182.
   ],
   [
-    La palabra ocupa 4 bytes por lo que si cabe, pero el carácter especial esta dividido en dos bytes,
-    por lo que la función no inserta el carácter especial `á` sino dos carácteres ASCII diferentes,
-    que corresponden a cada byte de `á`.
+    La palabra ocupa 4 bytes por lo que si cabe, pero el carácter especial esta
+    dividido en dos bytes, por lo que la función no inserta el carácter
+    especial `á` sino dos carácteres ASCII diferentes, que corresponden a cada
+    byte de `á`.
   ],
   [
-    esÃ¡ XXXX
+    `esÃ¡ XXXX`
   ],
 )
