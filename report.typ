@@ -254,16 +254,11 @@ int insert_puzzle(char matrix[], int rows, int columns, const char string[], int
 = Pruebas
 #v(2em)
 
-Hemos implementado una función `init_matrix` la cual recibe la dirección de una
-matriz y el número de elementos que tiene en total. Esta función sirve para
-escribir un espacio en todos los elementos de la matriz. También se puede
-utilizar para limpiar la matriz o dejarla vacía.
-
 == `fill_puzzle`
-Para probar esta función hemos elegido una matriz inicializada de dimensiones
-arbitrarias. En este caso hemos seleccionado una de dimensiones $5 times 5$ pero
-podría ser cualquier otra. Para cada prueba imprimimos la matriz antes y
-después de llamar a la función `fill_puzzle` junto con el valor que devuelve.
+Para probar esta función hemos elegido una matriz de dimensiones arbitrarias.
+En este caso hemos seleccionado una de dimensiones $5 times 5$ pero podría ser
+cualquier otra. Para cada prueba imprimimos la matriz antes y después de llamar
+a la función `fill_puzzle` junto con el valor que devuelve.
 
 No vamos a probar los casos en los que el número de elementos no es el adecuado
 ya que no tenemos manera de comprobar esos datos y esperamos que siempre sean
