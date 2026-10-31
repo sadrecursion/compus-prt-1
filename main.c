@@ -82,26 +82,28 @@ void puzzle_print(const char matrix[], int rows, int columns) {
 
     // Recorremos las filas
     while (rows > 0) {
-        // Siempre imprimimos directamente el primer elemento de cada fila
-        printf("%c", *matrix);
-        matrix++;
+        // Reiniciamos el contador de columnas
+        columns = total_columns;
 
         // Recorremos las columnas
-        while (columns > 1) {
-            // Imprimimos el separador de columna
-            printf("%c", ';');
-
+        while (columns > 0) {
             // Imprimimos el siguiente elemento de la fila
-            printf("%c", *matrix);
+            if (*matrix == 0) {
+                printf(" ");
+            } else {
+                printf("%c", *matrix);
+            }
             matrix++;
+
+            // Si no es la última columna, imprimimos el separador
+            if (columns > 1) {
+                printf("%c", ';');
+            }
 
             columns--;
         }
 
-        // Restauramos el número de columnas
-        columns = total_columns;
-
-        // Imprimimos el salto de línea la final de la fila
+        // Imprimimos el salto de línea al final de la fila
         printf("%c", '\n');
 
         rows--;
@@ -121,55 +123,58 @@ void puzzle_print_buffered(const char matrix[], int rows, int columns) {
 
     // Recorremos las filas
     while (rows > 0) {
-        // Siempre insertamos directamente el primer elemento de cada fila
-        *buffer = *matrix;
-        buffer++;
-        matrix++;
+        // Reiniciamos el contador de columnas
+        columns = total_columns;
 
         // Recorremos las columnas
-        while (columns > 1) {
-            // Insertamos el separador de columna
-            *buffer = ';';
-            buffer++;
-
+        while (columns > 0) {
             // Insertamos el siguiente elemento de la fila
-            *buffer = *matrix;
+            if (*matrix == 0) {
+                *buffer = ' ';
+            } else {
+                *buffer = *matrix;
+            }
+
             buffer++;
             matrix++;
+
+            // Si no es la última columna, insertamos el separador
+            if (columns > 1) {
+                *buffer = ';';
+                buffer++;
+            }
 
             columns--;
         }
 
-        // Restauramos el número de columnas
-        columns = total_columns;
-
-        // Insertamos el salto de línea la final de la fila
+        // Insertamos el salto de línea al final de la fila
         *buffer = '\n';
         buffer++;
 
         rows--;
     }
 
+    // Insertamos el carácter nulo al final de la cadena
     *buffer = 0;
+
+    // Imprimimos el contenido del buffer
     printf("%s", string);
 }
 
 int main() {
     char matrix1[25];
-    memset(matrix1, ' ', sizeof(matrix1));
 
-    printf("\n");
     puzzle_print(matrix1, 5, 5);
+    printf("\n");
 
     const int fill[4] = {1, 1, 3, 3};
     fill_puzzle(matrix1, 5, 5, fill, sizeof(fill));
 
-    printf("\n");
     puzzle_print(matrix1, 5, 5);
-
-    printf("\n%d", search_puzzle(matrix1, 5, 5, "abc", 1, 2));
-    insert_puzzle(matrix1, 5, 5, "abc", 1, 2);
     printf("\n");
+
+    printf("search result: %d\n", search_puzzle(matrix1, 5, 5, "abc", 1, 2));
+    insert_puzzle(matrix1, 5, 5, "abc", 1, 2);
     puzzle_print(matrix1, 5, 5);
 
     return 0;

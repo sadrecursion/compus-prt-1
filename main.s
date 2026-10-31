@@ -15,24 +15,6 @@ s2: .string "dos"
 
 .text
 
-init_matrix:
-    # a0 = dirección de la matriz
-    # a1 = número de elementos
-
-    li t0, 32
-
-init_matrix_loop:
-    beqz a1, init_matrix_end
-
-    sb t0, 0(a0)
-    addi a0, a0, 1
-    addi a1, a1, -1
-
-    j init_matrix_loop
-
-init_matrix_end:
-    jr ra
-
 puzzle_print:
     # a0 = dirección de la matriz
     # a1 = filas
@@ -57,42 +39,41 @@ puzzle_print:
 puzzle_print_row:
     beqz s1, puzzle_print_end
 
-    # Imprimimos el primer elemento de la fila
+    # Reiniciamos el contador de columnas
+    li s2, 0
+
+puzzle_print_column:
+    # Imprimimos el siguiente elemento de la fila
     lbu a0, 0(s0)
     addi s0, s0, 1
+
+    # Si el elemento es cero, imprimimos un espacio
+    bnez a0, puzzle_print_char
+    li a0, 32
+
+puzzle_print_char:
     li a7, 11
     ecall
 
-puzzle_print_column:
-    li t0, 1
-    ble s2, t0, puzzle_print_row_end
+    # Actualizamos el contador de columnas
+    addi s2, s2, 1
+    beq s2, s3, puzzle_print_row_end
 
     # Imprimimos el separador de columna
     li a0, 59
     li a7, 11
     ecall
 
-    # Imprimimos el siguiente elemento de la fila
-    lbu a0, 0(s0)
-    addi s0, s0, 1
-    li a7, 11
-    ecall
-
-    addi s2, s2, -1
-
     j puzzle_print_column
 
 puzzle_print_row_end:
-    # Restauramos el contador de columnas
-    mv s2, s3
-
     # Imprimimos el salto de línea
     li a0, 10
     li a7, 11
     ecall
 
+    # Pasamos a la siguiente fila
     addi s1, s1, -1
-
     j puzzle_print_row
 
 puzzle_print_end:
@@ -330,11 +311,6 @@ print_search_result:
     jr ra
 
 main:
-    # Inicializa la matriz 1
-    la a0, m1_data
-    li a1, 25
-    jal ra, init_matrix
-
     # Imprime la matriz 1
     la a0, m1_data
     li a1, 5
@@ -386,5 +362,3 @@ main:
 exit:
     li a7, 10
     ecall
-
-

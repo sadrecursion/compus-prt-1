@@ -73,11 +73,8 @@ manera individual y por lo tanto una llamada al sistema por cada uno. La
 fórmula que permite calcular la cantidad de memoria necesaria es:
 $("columnas" dot "filas" dot 2) + 1$.
 
-Se multiplica por dos porque hay que contar los separadores de cada columna más
-los saltos de línea y se suma uno porque es necesario añadir el byte cero al final.
-
 ```c
-void puzzle_print(const char matrix[], int rows, int columns) {
+void puzzle_print_buffered(const char matrix[], int rows, int columns) {
     // Guardamos el número total de columnas
     const int total_columns = columns;
 
@@ -89,27 +86,26 @@ void puzzle_print(const char matrix[], int rows, int columns) {
 
     // Recorremos las filas
     while (rows > 0) {
-        // Siempre insertamos directamente el primer elemento de cada fila
-        *buffer = *matrix;
-        buffer++;
-        matrix++;
+        // Reiniciamos el contador de columnas
+        columns = total_columns;
 
         // Recorremos las columnas
-        while (columns > 1) {
-            // Insertamos el separador de columna
-            *buffer = ';';
-            buffer++;
-
+        while (columns > 0) {
             // Insertamos el siguiente elemento de la fila
-            *buffer = *matrix;
+            if (*matrix == 0) { *buffer = ' '; }
+            else { *buffer = *matrix; }
+
             buffer++;
             matrix++;
 
+            // Si no es la última columna, insertamos el separador
+            if (columns > 1) {
+                *buffer = ';';
+                buffer++;
+            }
+
             columns--;
         }
-
-        // Restauramos el número de columnas
-        columns = total_columns;
 
         // Insertamos el salto de línea al final de la fila
         *buffer = '\n';
@@ -118,9 +114,13 @@ void puzzle_print(const char matrix[], int rows, int columns) {
         rows--;
     }
 
+    // Insertamos el carácter nulo al final de la cadena
     *buffer = 0;
+
+    // Imprimimos el contenido del buffer
     printf("%s", string);
 }
+
 ```
 
 Sin embargo, cuando hemos probado a imprimir una matriz con algunos carácteres
@@ -143,24 +143,26 @@ void puzzle_print(const char matrix[], int rows, int columns) {
 
     // Recorremos las filas
     while (rows > 0) {
-        // Siempre imprimimos directamente el primer elemento de cada fila
-        printf("%c", *matrix);
-        matrix++;
+        // Reiniciamos el contador de columnas
+        columns = total_columns;
 
         // Recorremos las columnas
-        while (columns > 1) {
-            // Imprimimos el separador de columna
-            printf("%c", ';');
-
+        while (columns > 0) {
             // Imprimimos el siguiente elemento de la fila
-            printf("%c", *matrix);
+            if (*matrix == 0) {
+                printf(" ");
+            } else {
+                printf("%c", *matrix);
+            }
             matrix++;
+
+            // Si no es la última columna, imprimimos el separador
+            if (columns > 1) {
+                printf("%c", ';');
+            }
 
             columns--;
         }
-
-        // Restauramos el número de columnas
-        columns = total_columns;
 
         // Imprimimos el salto de línea al final de la fila
         printf("%c", '\n');
