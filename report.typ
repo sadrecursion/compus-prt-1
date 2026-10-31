@@ -313,7 +313,7 @@ ejemplo: .string "cálculo"
 
 == `search_puzzle`
 Para las pruebas de esta función usaremos una matriz de dimensiones $2 times
-4$.
+4$ vacía a no ser que se especifique lo contrario. 
 
 #table(
   columns: (auto, auto, auto, auto),
@@ -358,6 +358,20 @@ Para las pruebas de esta función usaremos una matriz de dimensiones $2 times
   ],
   [
     Devuelve 0, porque la palabra no cabe en la primera fila.
+  ],
+  [
+    El esperado.
+  ],
+  [
+    La palabra "hola" y la coordenada $(0, 0)$.
+
+    Una matriz con un carácter de relleno en la posición $(2,0)$
+  ],
+  [
+    Comprobar si se puede escribir encima de un carácter de relleno.
+  ],
+  [
+    Devuelve 0, porque la palabra no cabe al haber un carácter de relleno.
   ],
   [
     El esperado.
